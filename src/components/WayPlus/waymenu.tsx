@@ -42,13 +42,17 @@ export const GetMenuItem = async (): Promise<MenuDataItem[]> => {
   let mdItem: MenuDataItem[] = [];
   console.log(result);
   if (result) {
-    for (let i = 0; i < result.length; i++) {
-      const item = result[i];
+    let items = result
+    if (!Array.isArray(items)) {
+      items = result.data
+    }
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       if (item.Name == "server") {
         const menuData = await queryRouters(item.viewmanage);
         console.log(menuData);
         mdItem = [...mdItem, ...menuData];
-      }else{
+      } else {
         const menuData = await getDir(item.Name);
         console.log(menuData);
         mdItem = [...mdItem, ...menuData];
@@ -68,7 +72,7 @@ async function getDir(service: string): Promise<MenuDataItem[]> {
       const meuns: MenuDataItem[] = [];
       if (item.menuitems && item.menuitems.length > 0) {
         item.menuitems.forEach((childItem: any) => {
-         const path= childItem.url.replace("/api/manage/", '/main/');
+          const path = childItem.url.replace("/api/manage/", '/main/');
           meuns.push({
             name: childItem.title ?? childItem.name,
             path: path,
